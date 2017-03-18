@@ -145,11 +145,17 @@ proto.build = function(height,col) {
 
     var matCol = new THREE.Color( colToHex(color.processRGBA(col,true)) );
     var material = new materialType( {color: matCol} );
+    var i, geometry, mesh;
 
+    for (i=0; i<4; i++) {
+        geometry = meshBlade1(0.3*meters, height);
+        mesh = new THREE.Mesh( geometry, material );
+        this.obj.add( mesh );
+    }
 
-    for (var i=0; i<5; i++) {
-        var geometry = meshBlade1(0.3*meters, height);
-        var mesh = new THREE.Mesh( geometry, material );
+    for (i=0; i<5; i++) {
+        geometry = meshBlade2(0.3*meters, height);
+        mesh = new THREE.Mesh( geometry, material );
         this.obj.add( mesh );
     }
 
@@ -179,8 +185,36 @@ function meshBlade1(w,h){
     return geometry;
 }
 
-function meshBlade2(){
+function meshBlade2(w,h){
 
+    var hw = w / 2;                             // half width
+    var th = tombola.rangeFloat((h/2),h);       // top height
+    var bo = tombola.rangeFloat(-(w/5),w/5);    // base offset angle
+    var tx = tombola.rangeFloat(-(h/4),h/4);    // top x offset
+    var tz = tombola.rangeFloat(-(h/9),h/9);    // top z offset
+    var bend = tombola.rangeFloat((h/5),(h/2)); // bend offset for top
+    var elbow = th/2;                           // bend point
+    var ex = tx/2;                              // bend x offset
+    var ez = tz/2;                              // bend z offset
+
+
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push(
+        new THREE.Vector3(  tx,    th,     tz + bend), // top
+        new THREE.Vector3(  ex-hw, elbow,  ez+bo),     // elbow left
+        new THREE.Vector3(  ex+hw, elbow,  ez),        // elbow right
+        new THREE.Vector3(  0,   0,      0)            // base
+    );
+
+    geometry.faces.push( new THREE.Face3( 0, 1, 2 ) ); // top faces
+    geometry.faces.push( new THREE.Face3( 0, 2, 1 ) );
+
+    geometry.faces.push( new THREE.Face3( 3, 1, 2 ) ); // bottom faces
+    geometry.faces.push( new THREE.Face3( 3, 2, 1 ) );
+
+    geometry.computeBoundingSphere();
+    geometry.computeFaceNormals();
+    return geometry;
 }
 
 
