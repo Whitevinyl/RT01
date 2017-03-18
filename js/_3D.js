@@ -26,7 +26,7 @@ function setup3d() {
     if (device==='mobile') {
         cameraDepth = 8.5;
     }
-    camera = new Camera(cameraDepth, new THREE.Vector3(0,0,0), 0.0035, 0.01, 0.6 * meters, 2*meters, 55);
+    camera = new Camera(cameraDepth, new THREE.Vector3(0,0,0), 0.0035, 0.02, 0.6 * meters, 1.2*meters, 55);
 
 
     // create fog & background color //
@@ -92,12 +92,12 @@ function render3d() {
         }
         else {
             destAngle = lastAngle + ((TAU/2) - ((TAU/fullX) * mouseX));
-            camera.addEnergy(Math.abs((halfX - mouseX)/10));
+
         }
 
         // 'lerp' / smoothly move to destination angle //
         scene3d.rotation.y = lerp(scene3d.rotation.y,destAngle, 5);
-
+        camera.addEnergy(Math.abs((destAngle - scene3d.rotation.y)/10));
 
         building.update();
 
@@ -170,7 +170,7 @@ proto.addEnergy = function(e) {
 proto.update = function(depth) {
 
     // entropy //
-    this.energyDest *= 0.94;
+    this.energyDest *= 0.9;
     this.energyDest = valueInRange(this.energyDest, 0 ,100);
     this.energy = lerp(this.energy, this.energyDest, 10);
 
