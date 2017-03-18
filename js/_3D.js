@@ -28,7 +28,7 @@ function setup3d() {
     if (device==='mobile') {
         cameraDepth = 8.5;
     }
-    camera = new Camera(cameraDepth,new THREE.Vector3(0,0,0));
+    camera = new Camera(cameraDepth, new THREE.Vector3(0,0,0), 0.005, 0.01, 0.6 * meters, 2*meters,75);
     //camera3d.position.z = cameraDepth; // distance
     //camera3d.position.y = 2.2; // height
     //camera3d.rotation.x = -((TAU/360)*18); // angle
@@ -139,10 +139,15 @@ function resize3d() {
 //  CAMERA
 //-------------------------------------------------------------------------------------------
 
-function Camera(depth,focus) {
+function Camera(depth,focus,minVelocity,maxVelocity,minScale,maxScale,accuracy) {
 
     this.depth = depth;
     this.focus = focus;
+    this.minVelocity = minVelocity;
+    this.maxVelocity = maxVelocity;
+    this.minScale = minScale;
+    this.maxScale = maxScale;
+    this.accuracy = accuracy;
 
     this.cam = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
     this.cam.position.set(0,2.2,depth);
@@ -150,8 +155,8 @@ function Camera(depth,focus) {
 
     this.simplex = new SimplexNoise();
     this.index = 0;
-    this.velocity = 0.001;
-    this.scale = 0.1 * meters;
+    this.velocity = this.minVelocity;
+    this.scale = this.minScale;
 }
 var proto = Camera.prototype;
 
@@ -160,6 +165,7 @@ proto.update = function(depth) {
     var xs = this.simplex.noise(this.index, 0) * this.scale;
     var ys = this.simplex.noise(0, this.index) * this.scale;
     this.cam.position.set(xs,2.2 + ys, depth);
+    this.cam.lookAt(this.focus);
 };
 
 proto.resize = function(depth) {
