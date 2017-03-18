@@ -9,6 +9,7 @@ var scene3d,camera3d,renderer3d,directional3d,ambient3d,col3d,materialType,lastA
 var cameraDepth = 7.1;
 var building;
 var destAngle = -TAU/8;
+var camera;
 
 function setup3d() {
 
@@ -20,16 +21,17 @@ function setup3d() {
 
     // setup view //
     scene3d = new THREE.Scene();
-    camera3d = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
+    //camera3d = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
 
 
     // point camera //
     if (device==='mobile') {
         cameraDepth = 8.5;
     }
-    camera3d.position.z = cameraDepth; // distance
-    camera3d.position.y = 2.2; // height
-    camera3d.rotation.x = -((TAU/360)*18); // angle
+    camera = new Camera(cameraDepth,new THREE.Vector3(0,0,0));
+    //camera3d.position.z = cameraDepth; // distance
+    //camera3d.position.y = 2.2; // height
+    //camera3d.rotation.x = -((TAU/360)*18); // angle
 
 
     // create fog & background color //
@@ -103,7 +105,7 @@ function render3d() {
 
 
         building.update();
-        renderer3d.render( scene3d, camera3d );
+        renderer3d.render( scene3d, camera.cam );
     }
 }
 
@@ -128,3 +130,32 @@ function draw3d(ctx) {
 function resize3d() {
 
 }
+
+
+//-------------------------------------------------------------------------------------------
+//  CAMERA
+//-------------------------------------------------------------------------------------------
+
+function Camera(depth,focus) {
+
+    this.depth = depth;
+    this.focus = focus;
+
+    this.cam = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
+    this.cam.position.set(0,2.2,depth);
+    this.cam.lookAt(focus);
+}
+var proto = Camera.prototype;
+
+proto.update = function() {
+
+};
+
+proto.resize = function(depth) {
+    this.cam.aspect = fullX / (fullX*1.2);
+    this.cam.aspect = halfX / halfY;
+    this.cam.updateProjectionMatrix();
+    cameraDepth = depth;
+    this.cam.position.z = cameraDepth;
+};
+

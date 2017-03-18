@@ -55,12 +55,15 @@ function metrics() {
         dataType = Math.round(u/100);
         subType = Math.round(u/90);
 
-        if (camera3d) {
-            camera3d.aspect = fullX / (fullX*1.2);
+        /*if (camera3d) {
             camera3d.aspect = halfX / halfY;
             camera3d.updateProjectionMatrix();
             cameraDepth = 8.5 + (((height/width)-1)*5);
             camera3d.position.z = cameraDepth;
+        }*/
+
+        if (camera) {
+            camera.resize(8.5 + (((height/width)-1)*5));
         }
 
     } else {
@@ -75,11 +78,15 @@ function metrics() {
         dataType = Math.round(u/85);
         subType = Math.round(u/90);
 
-        if (camera3d) {
+        /*if (camera3d) {
             camera3d.aspect = halfX / halfY;
             camera3d.updateProjectionMatrix();
             cameraDepth = 7.1;
             camera3d.position.z = cameraDepth;
+        }*/
+
+        if (camera) {
+            camera.resize(7.1);
         }
     }
 
