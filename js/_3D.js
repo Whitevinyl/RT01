@@ -5,7 +5,7 @@
 //  SETUP
 //-------------------------------------------------------------------------------------------
 
-var scene3d,camera3d,renderer3d,directional3d,ambient3d,col3d,materialType,lastAngle;
+var scene3d,renderer3d,directional3d,ambient3d,col3d,materialType,lastAngle;
 var cameraDepth = 7.1;
 var building;
 var destAngle = -TAU/8;
@@ -21,17 +21,12 @@ function setup3d() {
 
     // setup view //
     scene3d = new THREE.Scene();
-    //camera3d = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
-
 
     // point camera //
     if (device==='mobile') {
         cameraDepth = 8.5;
     }
     camera = new Camera(cameraDepth, new THREE.Vector3(0,0,0), 0.005, 0.01, 0.6 * meters, 2*meters,75);
-    //camera3d.position.z = cameraDepth; // distance
-    //camera3d.position.y = 2.2; // height
-    //camera3d.rotation.x = -((TAU/360)*18); // angle
 
 
     // create fog & background color //
@@ -155,6 +150,7 @@ function Camera(depth,focus,minVelocity,maxVelocity,minScale,maxScale,accuracy) 
 
     this.simplex = new SimplexNoise();
     this.index = 0;
+    this.energy = 0;
     this.velocity = this.minVelocity;
     this.scale = this.minScale;
 }
@@ -165,7 +161,10 @@ proto.update = function(depth) {
     var xs = this.simplex.noise(this.index, 0) * this.scale;
     var ys = this.simplex.noise(0, this.index) * this.scale;
     this.cam.position.set(xs,2.2 + ys, depth);
-    this.cam.lookAt(this.focus);
+    var pos = this.focus.clone();
+    pos.x += (xs * ((100-this.accuracy)/100));
+    pos.y += (ys * ((100-this.accuracy)/100));
+    this.cam.lookAt(pos);
 };
 
 proto.resize = function(depth) {
