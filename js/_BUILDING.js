@@ -71,7 +71,7 @@ proto.generate = function() {
     this.particles(400);
 
 
-    var clump = new GrassClump(this.obj, new Point3D(0,5*meters,0), 5*meters, grassCols[0]);
+    var clump = new GrassClump(this.obj, new Point3D(0,-15*meters,0), 8*meters, grassCols[0]);
 };
 
 
@@ -159,15 +159,16 @@ proto.build = function(height,col) {
 function meshBlade1(w,h){
 
     var hw = w / 2; // half width
+    var th = tombola.rangeFloat((h/2),h);    // top height
     var bo = tombola.rangeFloat(-(w/5),w/5); // base offset angle
     var tx = tombola.rangeFloat(-(h/4),h/4); // top x offset
     var tz = tombola.rangeFloat(-(h/9),h/9); // top z offset
 
     var geometry = new THREE.Geometry();
     geometry.vertices.push(
-        new THREE.Vector3(  tx,  h,  tz),    // top
-        new THREE.Vector3( -hw,  0,  bo),    // base left
-        new THREE.Vector3(  hw,  0,  0)      // base right
+        new THREE.Vector3(  tx,  th,  tz),    // top
+        new THREE.Vector3( -hw,  0,   bo),    // base left
+        new THREE.Vector3(  hw,  0,   0)      // base right
     );
 
     geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
