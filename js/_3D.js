@@ -139,10 +139,8 @@ function Camera(depth,focus,minVelocity,maxVelocity,minScale,maxScale,accuracy) 
     this.depth = depth;
     this.focus = focus;
     this.minVelocity = minVelocity;
-    this.maxVelocity = maxVelocity;
     this.velocityRange = maxVelocity - minVelocity;
     this.minScale = minScale;
-    this.maxScale = maxScale;
     this.scaleRange = maxScale - minScale;
     this.accuracy = accuracy;
 

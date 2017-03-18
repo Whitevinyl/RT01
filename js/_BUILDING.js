@@ -10,11 +10,14 @@ var meters = 0.1; // unit for building measurement
 
 function Building() {
 
-    this.particleList = [];
-
     // create container object //
     this.obj = new THREE.Object3D();
     scene3d.add( this.obj );
+
+    this.particleList = [];
+    this.grassSprites = [];
+
+    this.generateGrassTexture(grassCols[1]);
 
     //this.simplex = new SimplexNoise();
 
@@ -73,6 +76,8 @@ proto.generate = function() {
     col = grassCols[2];
     var clump = new GrassClump(this.obj, new Point3D(-10 * meters,-6*meters,4.1*meters), 4*meters, col);
     clump = new GrassClump(this.obj, new Point3D(-11 * meters,-6*meters,4.1*meters), 6*meters, col);
+
+    var bill = new GrassBillboard(this.obj,new Point3D(-16 * meters,-6*meters,2*meters), 2*meters, 3*meters, this.grassSprites[0]);
 };
 
 
@@ -98,6 +103,8 @@ proto.particles = function(n) {
     texture.needsUpdate = true;
 
     var material = new THREE.SpriteMaterial( { map: texture } );
+    /*material.blending = THREE.CustomBlending;
+    material.blendSrc = THREE.OneFactor;*/
 
     var range = 30 * meters;
 
@@ -110,6 +117,27 @@ proto.particles = function(n) {
         this.particleList.push(new Particle(sprite));
     }
 
+};
+
+//-------------------------------------------------------------------------------------------
+//  GRASS TEXTURE
+//-------------------------------------------------------------------------------------------
+
+proto.generateGrassTexture = function(col) {
+
+    var size = 32; // power of 2
+
+    var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width = size;
+    canvas.height = size;
+
+    drawGrassTexture(ctx,size,col);
+
+    var texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+
+    this.grassSprites.push(new THREE.SpriteMaterial( { map: texture } ) );
 };
 
 //-------------------------------------------------------------------------------------------
@@ -128,6 +156,15 @@ proto.update = function() {
 //-------------------------------------------------------------------------------------------
 //  GRASS
 //-------------------------------------------------------------------------------------------
+
+
+function GrassBillboard(parent,position,width,height,texture) {
+    var sprite = new THREE.Sprite( texture );
+    sprite.position.set( position.x, position.y, position.z );
+    sprite.scale.set( width, height, 1 );
+    parent.add( sprite );
+}
+
 
 function GrassClump(parent,position,height,color) {
     this.obj = new THREE.Object3D();

@@ -86,6 +86,33 @@ function drawSpriteTri(ctx,ctx2,alpha,size,col) {
 }
 
 
+function drawGrassTexture(ctx,size,col) {
+
+    color.fill(ctx,col);
+
+    var hx = size / 2;
+
+    ctx.beginPath();
+               // x               // y
+    ctx.moveTo(hx - (hx * 0.8),   size);
+    ctx.lineTo(0,                 size * 0.5); // p
+    ctx.lineTo(hx - (hx * 0.5),   size * 0.9);
+    ctx.lineTo(hx - (hx * 0.4),   size * 0.1); // p
+    ctx.lineTo(hx - (hx * 0.2),   size * 0.9);
+    ctx.lineTo(hx,                0);          // p
+    ctx.lineTo(hx + (hx * 0.2),   size * 0.9);
+    ctx.lineTo(hx + (hx * 0.4),   size * 0.2); // p
+    ctx.lineTo(hx + (hx * 0.5),   size * 0.9);
+    ctx.lineTo(0,                 size * 0.6); // p
+    ctx.lineTo(hx + (hx * 0.8),   size);
+
+    ctx.closePath();
+    ctx.fill();
+
+}
+
+
+
 function spacedText(ctx,string,x,y,spacing) {
 
     var chars = string.length;
