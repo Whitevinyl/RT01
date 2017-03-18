@@ -26,7 +26,7 @@ function setup3d() {
     if (device==='mobile') {
         cameraDepth = 8.5;
     }
-    camera = new Camera(cameraDepth, new THREE.Vector3(0,0,0), 0.005, 0.01, 0.6 * meters, 2*meters,75);
+    camera = new Camera(cameraDepth, new THREE.Vector3(0,0,0), 0.0035, 0.01, 0.6 * meters, 2*meters, 55);
 
 
     // create fog & background color //
@@ -92,7 +92,7 @@ function render3d() {
         }
         else {
             destAngle = lastAngle + ((TAU/2) - ((TAU/fullX) * mouseX));
-
+            camera.addEnergy(Math.abs((halfX - mouseX)/10));
         }
 
         // 'lerp' / smoothly move to destination angle //
@@ -140,9 +140,12 @@ function Camera(depth,focus,minVelocity,maxVelocity,minScale,maxScale,accuracy) 
     this.focus = focus;
     this.minVelocity = minVelocity;
     this.maxVelocity = maxVelocity;
+    this.velocityRange = maxVelocity - minVelocity;
     this.minScale = minScale;
     this.maxScale = maxScale;
+    this.scaleRange = maxScale - minScale;
     this.accuracy = accuracy;
+
 
     this.cam = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
     this.cam.position.set(0,2.2,depth);
@@ -151,12 +154,31 @@ function Camera(depth,focus,minVelocity,maxVelocity,minScale,maxScale,accuracy) 
     this.simplex = new SimplexNoise();
     this.index = 0;
     this.energy = 0;
+    this.energyDest = 0;
     this.velocity = this.minVelocity;
     this.scale = this.minScale;
 }
 var proto = Camera.prototype;
 
+
+proto.addEnergy = function(e) {
+    this.energyDest = this.energy + e;
+};
+
+
+
 proto.update = function(depth) {
+
+    // entropy //
+    this.energyDest *= 0.94;
+    this.energyDest = valueInRange(this.energyDest, 0 ,100);
+    this.energy = lerp(this.energy, this.energyDest, 10);
+
+    // calc velocity & scale from energy //
+    this.velocity = this.minVelocity + (this.velocityRange * this.energy);
+    this.scale = this.minScale + (this.scaleRange * this.energy);
+
+    // map to perlin simplex //
     this.index += this.velocity;
     var xs = this.simplex.noise(this.index, 0) * this.scale;
     var ys = this.simplex.noise(0, this.index) * this.scale;
@@ -166,6 +188,9 @@ proto.update = function(depth) {
     pos.y += (ys * ((100-this.accuracy)/100));
     this.cam.lookAt(pos);
 };
+
+
+
 
 proto.resize = function(depth) {
     this.cam.aspect = fullX / (fullX*1.2);
