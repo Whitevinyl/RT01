@@ -105,6 +105,9 @@ function render3d() {
 
 
         building.update();
+
+        camera.update(cameraDepth);
+
         renderer3d.render( scene3d, camera.cam );
     }
 }
@@ -144,11 +147,19 @@ function Camera(depth,focus) {
     this.cam = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 0.01, 50 );
     this.cam.position.set(0,2.2,depth);
     this.cam.lookAt(focus);
+
+    this.simplex = new SimplexNoise();
+    this.index = 0;
+    this.velocity = 0.001;
+    this.scale = 0.1 * meters;
 }
 var proto = Camera.prototype;
 
-proto.update = function() {
-
+proto.update = function(depth) {
+    this.index += this.velocity;
+    var xs = this.simplex.noise(this.index, 0) * this.scale;
+    var ys = this.simplex.noise(0, this.index) * this.scale;
+    this.cam.position.set(xs,2.2 + ys, depth);
 };
 
 proto.resize = function(depth) {

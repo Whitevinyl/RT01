@@ -16,7 +16,7 @@ function Building() {
     this.obj = new THREE.Object3D();
     scene3d.add( this.obj );
 
-    this.simplex = new SimplexNoise();
+    //this.simplex = new SimplexNoise();
 
     // generate the building //
     this.generate();
