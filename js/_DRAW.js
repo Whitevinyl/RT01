@@ -96,14 +96,14 @@ function drawGrassTexture(ctx,size,col) {
                // x               // y
     ctx.moveTo(hx - (hx * 0.8),   size);
     ctx.lineTo(0,                 size * 0.5); // p
-    ctx.lineTo(hx - (hx * 0.5),   size * 0.9);
-    ctx.lineTo(hx - (hx * 0.4),   size * 0.1); // p
-    ctx.lineTo(hx - (hx * 0.2),   size * 0.9);
+    ctx.lineTo(hx - (hx * 0.55),   size * 0.96);
+    ctx.lineTo(hx - (hx * 0.5),   size * 0.1); // p
+    ctx.lineTo(hx - (hx * 0.2),   size * 0.96);
     ctx.lineTo(hx,                0);          // p
-    ctx.lineTo(hx + (hx * 0.2),   size * 0.9);
-    ctx.lineTo(hx + (hx * 0.4),   size * 0.2); // p
-    ctx.lineTo(hx + (hx * 0.5),   size * 0.9);
-    ctx.lineTo(0,                 size * 0.6); // p
+    ctx.lineTo(hx + (hx * 0.2),   size * 0.96);
+    ctx.lineTo(hx + (hx * 0.5),   size * 0.2); // p
+    ctx.lineTo(hx + (hx * 0.55),   size * 0.96);
+    ctx.lineTo(size,              size * 0.6); // p
     ctx.lineTo(hx + (hx * 0.8),   size);
 
     ctx.closePath();

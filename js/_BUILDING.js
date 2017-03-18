@@ -17,7 +17,7 @@ function Building() {
     this.particleList = [];
     this.grassSprites = [];
 
-    this.generateGrassTexture(grassCols[1]);
+    this.generateGrassTexture(grassCols[2]);
 
     //this.simplex = new SimplexNoise();
 
@@ -71,13 +71,28 @@ proto.generate = function() {
     mesh.position.x = 10 * meters;
 
 
-    this.particles(400);
+    this.particles(300);
 
     col = grassCols[2];
-    var clump = new GrassClump(this.obj, new Point3D(-10 * meters,-6*meters,4.1*meters), 4*meters, col);
-    clump = new GrassClump(this.obj, new Point3D(-11 * meters,-6*meters,4.1*meters), 6*meters, col);
+    var clump = new GrassClump(this.obj, new Point3D(-10 * meters,-6*meters,4.1*meters), 4*meters, 0, col);
+    clump = new GrassClump(this.obj, new Point3D(-11 * meters,-6*meters,4.1*meters), 6*meters, 0, col);
+    clump = new GrassClump(this.obj, new Point3D(-10.5 * meters,-6*meters,5*meters), 5*meters, 0, col);
+    clump = new GrassClump(this.obj, new Point3D(-11.5 * meters,-6*meters,5*meters), 5*meters, 0, col);
+    clump = new GrassClump(this.obj, new Point3D(-13 * meters,-6*meters,3.5*meters), 3*meters, 0, col);
+    clump = new GrassClump(this.obj, new Point3D(-14 * meters,-6*meters,3*meters), 3.5*meters, -0.1, grassCols[1]);
+    clump = new GrassClump(this.obj, new Point3D(-15 * meters,-6*meters,4*meters), 3*meters, -0.1, col);
+    clump = new GrassClump(this.obj, new Point3D(-12.6 * meters,-6*meters,5*meters), 9*meters, -0.1, grassCols[3]);
+    clump = new GrassClump(this.obj, new Point3D(-16 * meters,-6*meters,2*meters), 9*meters, -0.15, grassCols[1]);
+    clump = new GrassClump(this.obj, new Point3D(-15 * meters,-6*meters,6*meters), 6*meters, -0.15, grassCols[4]);
+    clump = new GrassClump(this.obj, new Point3D(-15 * meters,-6*meters,-4*meters), 6*meters, -0.4, grassCols[0]);
 
-    var bill = new GrassBillboard(this.obj,new Point3D(-16 * meters,-6*meters,2*meters), 2*meters, 3*meters, this.grassSprites[0]);
+    clump = new GrassPatch(this.obj, new Point3D(-16 * meters,-6*meters,-5*meters), 2*meters, 20, grassCols[0]);
+    clump = new GrassPatch(this.obj, new Point3D(-15.5 * meters,-6*meters,6*meters), 2*meters, 15, grassCols[4]);
+    clump = new GrassPatch(this.obj, new Point3D(-10 * meters,-6*meters,6*meters), 2*meters, 20, grassCols[5]);
+    clump = new GrassPatch(this.obj, new Point3D(-11.5 * meters,-6*meters,7*meters), 2*meters, 20, grassCols[5]);
+    clump = new GrassPatch(this.obj, new Point3D(-16 * meters,-6*meters,7.5*meters), 2*meters, 20, grassCols[5]);
+
+    //var bill = new GrassBillboard(this.obj,new Point3D(-10.5 * meters,-6*meters,4.1*meters), 1.5*meters, 3*meters, this.grassSprites[0]);
 };
 
 
@@ -85,7 +100,7 @@ proto.generate = function() {
 proto.particles = function(n) {
 
     var size = 8; // power of 2
-    var scale = 0.06 * meters;
+    var scale = 0.07 * meters;
 
     var canvas = document.createElement('canvas');
     var canvasCtx = canvas.getContext('2d');
@@ -137,7 +152,11 @@ proto.generateGrassTexture = function(col) {
     var texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;
 
-    this.grassSprites.push(new THREE.SpriteMaterial( { map: texture } ) );
+    var material = new THREE.SpriteMaterial( { map: texture } );
+    /*material.blending = THREE.CustomBlending;
+    material.blendSrc = THREE.OneFactor;*/
+
+    this.grassSprites.push( material );
 };
 
 //-------------------------------------------------------------------------------------------
@@ -160,15 +179,16 @@ proto.update = function() {
 
 function GrassBillboard(parent,position,width,height,texture) {
     var sprite = new THREE.Sprite( texture );
-    sprite.position.set( position.x, position.y, position.z );
+    sprite.position.set( position.x, position.y + (height/2), position.z );
     sprite.scale.set( width, height, 1 );
     parent.add( sprite );
 }
 
 
-function GrassClump(parent,position,height,color) {
+function GrassClump(parent,position,height,angle,color) {
     this.obj = new THREE.Object3D();
     this.obj.position.set(position.x,position.y,position.z);
+    this.obj.rotateY(angle * TAU);
     this.build(height,color);
 
     parent.add( this.obj );
@@ -179,39 +199,88 @@ proto = GrassClump.prototype;
 
 proto.build = function(height,col) {
 
+    var mergedGeo	= new THREE.Geometry();
     var matCol = new THREE.Color( colToHex(color.processRGBA(col,true)) );
     var material = new THREE.MeshBasicMaterial( {color: matCol} );
     material.side = THREE.DoubleSide;
     var i, geometry, mesh;
 
+    var r = 0.06 * TAU;
+
     for (i=0; i<6; i++) {
         geometry = meshBlade1(0.3*meters, height);
         mesh = new THREE.Mesh( geometry, material );
-        this.obj.add( mesh );
+        mesh.rotateY(tombola.rangeFloat(-r, r));
+        THREE.GeometryUtils.merge( mergedGeo, mesh );
     }
 
     for (i=0; i<6; i++) {
-        geometry = meshBlade2(0.2*meters, height);
+        geometry = meshBlade3(0.2*meters, height);
         mesh = new THREE.Mesh( geometry, material );
-        this.obj.add( mesh );
+        mesh.rotateY(tombola.rangeFloat(-r, r));
+        THREE.GeometryUtils.merge( mergedGeo, mesh );
     }
 
+    r = 0.02 * TAU;
+    mesh = new THREE.Mesh( mergedGeo, material );
+    mesh.rotateY(tombola.rangeFloat(-r, r));
+    this.obj.add( mesh );
 };
 
 
+function GrassPatch(parent,position,height,number,color) {
+    this.obj = new THREE.Object3D();
+    this.obj.position.set(position.x,position.y,position.z);
+    this.build(height,number,color);
+
+    parent.add( this.obj );
+}
+proto = GrassPatch.prototype;
+
+
+
+proto.build = function(height,number,col) {
+
+    var mergedGeo	= new THREE.Geometry();
+    var matCol = new THREE.Color( colToHex(color.processRGBA(col,true)) );
+    var material = new THREE.MeshBasicMaterial( {color: matCol} );
+    material.side = THREE.DoubleSide;
+    var i, geometry, mesh;
+
+    var r = 0.5 * TAU;
+    var r2 = (Math.sqrt(number)/8)*meters;
+
+    for (i=0; i<number; i++) {
+        geometry = meshBlade4(0.2*meters, height);
+        mesh = new THREE.Mesh( geometry, material );
+        mesh.rotateY(tombola.rangeFloat(-r, r));
+        mesh.position.set(tombola.rangeFloat(-r2,r2),0,tombola.rangeFloat(-r2,r2));
+        THREE.GeometryUtils.merge( mergedGeo, mesh );
+    }
+
+    r = 0.02 * TAU;
+    mesh = new THREE.Mesh( mergedGeo, material );
+    mesh.rotateY(tombola.rangeFloat(-r, r));
+    this.obj.add( mesh );
+};
+
+
+// simple tri //
 function meshBlade1(w,h){
 
     var hw = w / 2; // half width
     var th = tombola.rangeFloat((h*0.6),h*1.2); // top height
-    var bo = tombola.rangeFloat(-(w/2),w/2);   // base offset angle
-    var tx = tombola.rangeFloat(-(h/4),h/4);   // top x offset
-    var tz = tombola.rangeFloat(-(h/8),h/8);   // top z offset
+    var tx = tombola.rangeFloat(-(h/4),h/4);    // top x offset
+    var tz = tombola.rangeFloat(-(h/8),h/6);    // top z offset
+    var bo = tombola.rangeFloat(-w,w);          // base offset angle
+    var xo = tx / 3;                            // base x offset
+
 
     var geometry = new THREE.Geometry();
     geometry.vertices.push(
-        new THREE.Vector3(  tx,  th,  tz),    // top
-        new THREE.Vector3( -hw,  0,   bo),    // base left
-        new THREE.Vector3(  hw,  0,   0)      // base right
+        new THREE.Vector3( xo + tx,  th,  tz),    // top
+        new THREE.Vector3( xo - hw,  0,   bo),    // base left
+        new THREE.Vector3( xo + hw,  0,   0)      // base right
     );
 
     geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
@@ -222,25 +291,27 @@ function meshBlade1(w,h){
     return geometry;
 }
 
+// 2 plane bend //
 function meshBlade2(w,h){
 
     var hw = w / 2;                             // half width
     var th = tombola.rangeFloat((h/2),h);       // top height
-    var bo = tombola.rangeFloat(-(w/2),w/2);    // base offset angle
+    var bo = tombola.rangeFloat(-w,w);          // base offset angle
     var tx = tombola.rangeFloat(-(h/4),h/4);    // top x offset
     var tz = tombola.rangeFloat(-(h/8),h/8);    // top z offset
     var bend = tombola.rangeFloat((h/6),(h/3)); // bend offset for top
-    var elbow = th/2;                           // bend point
-    var ex = tx/2;                              // bend x offset
-    var ez = tz/2;                              // bend z offset
+    var elbow = th / 2;                         // bend point
+    var ex = tx / 2;                            // bend x offset
+    var ez = tz / 2;                            // bend z offset
+    var xo = tx / 3;                            // base x offset
 
 
     var geometry = new THREE.Geometry();
     geometry.vertices.push(
-        new THREE.Vector3(  tx,    th,     tz + bend), // top
-        new THREE.Vector3(  ex-hw, elbow,  ez+bo),     // elbow left
-        new THREE.Vector3(  ex+hw, elbow,  ez),        // elbow right
-        new THREE.Vector3(  0,   0,      0)            // base
+        new THREE.Vector3(  xo + tx,      th,     tz + bend), // top
+        new THREE.Vector3(  xo + ex - hw, elbow,  ez+bo),     // elbow left
+        new THREE.Vector3(  xo + ex + hw, elbow,  ez),        // elbow right
+        new THREE.Vector3(  xo,           0,      0)          // base
     );
 
     geometry.faces.push( new THREE.Face3( 0, 1, 2 ) ); // top faces
@@ -253,6 +324,69 @@ function meshBlade2(w,h){
     geometry.computeFaceNormals();
     return geometry;
 }
+
+
+// 2 plane bend //
+function meshBlade3(w,h){
+
+    var hw = w / 2;                             // half width
+    var th = tombola.rangeFloat((h/2),h);       // top height
+    var bo = tombola.rangeFloat(-w,w);          // base offset angle
+    var tx = tombola.rangeFloat(-(h/4),h/4);    // top x offset
+    var tz = tombola.rangeFloat(-(h/8),h/8);    // top z offset
+    var bend = tombola.rangeFloat((h/6),(h/3)); // bend offset for top
+    var elbow = th / 2;                         // bend point
+    var ex = tx / 2;                            // bend x offset
+    var ez = tz / 2;                            // bend z offset
+    var xo = tx / 3;                            // base x offset
+
+
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push(
+        new THREE.Vector3(  xo + tx,      th,     tz + bend), // top
+        new THREE.Vector3(  xo + ex - hw, elbow,  ez+bo),     // elbow left
+        new THREE.Vector3(  xo + ex + hw, elbow,  ez),        // elbow right
+        new THREE.Vector3(  xo - hw,      0,      0),         // base left
+        new THREE.Vector3(  xo + hw,      0,      0)          // base right
+    );
+
+    geometry.faces.push( new THREE.Face3( 0, 1, 2 ) ); // top faces
+
+    geometry.faces.push( new THREE.Face3( 3, 1, 2 ) ); // bottom faces
+    geometry.faces.push( new THREE.Face3( 3, 2, 4 ) );
+
+    geometry.computeBoundingSphere();
+    geometry.computeFaceNormals();
+    return geometry;
+}
+
+// 2 plane v tri //
+function meshBlade4(w,h){
+
+    var hw = w / 2; // half width
+    var th = tombola.rangeFloat((h*0.6),h*1.2); // top height
+    var tx = tombola.rangeFloat(-(h/4),h/4);    // top x offset
+    var tz = tombola.rangeFloat(-(h/8),h/6);    // top z offset
+    var xo = tx / 3;                            // base x offset
+
+
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push(
+        new THREE.Vector3( xo + tx,  th,  tz),    // top
+        new THREE.Vector3( xo - hw,  0,   0),    // base left
+        new THREE.Vector3( xo,  0,   hw),     // base center
+        new THREE.Vector3( xo + hw,  0,   0)      // base right
+    );
+
+    geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    geometry.faces.push( new THREE.Face3( 0, 2, 3 ) );
+
+    geometry.computeBoundingSphere();
+    geometry.computeFaceNormals();
+    return geometry;
+}
+
+
 
 
 //-------------------------------------------------------------------------------------------

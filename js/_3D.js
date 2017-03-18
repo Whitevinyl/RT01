@@ -17,6 +17,7 @@ function setup3d() {
     renderer3d = new THREE.WebGLRenderer({antialias: true});
     renderer3d.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer3d.domElement );
+    renderer3d.setClearColor(new THREE.Color(),1);
 
 
     // setup view //
