@@ -33,9 +33,9 @@ function setup3d() {
 
 
     // create fog & background color //
-    col3d = new THREE.Color( colToHex(color.processRGBA(bgCols[3],true)) );
+    col3d = new THREE.Color( colToHex(color.processRGBA(bgCols[2],true)) );
     scene3d.background = col3d;
-    scene3d.fog = new THREE.Fog(col3d,cameraDepth - 1,cameraDepth + 2);
+    scene3d.fog = new THREE.Fog(col3d,cameraDepth,cameraDepth + 4);
 
 
     // lighting //

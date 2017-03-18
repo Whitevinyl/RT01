@@ -38,7 +38,7 @@ var mouseIsDown = false;
 // COLORS //
 var bgCols = [new RGBA(235,240,224,1),new RGBA(51,44,52,1),new RGBA(240,240,240,1),new RGBA(255,150,155,1),new RGBA(5,5,5,1)];
 var concreteCols = [ new RGBA(40,40,50,1), new RGBA(100,100,90,1), new RGBA(170,170,160,1), new RGBA(180,180,170,1), new RGBA(201,201,190,1), new RGBA(210,210,200,1)];
-var grassCols = [new RGBA(40,60,50,1)];
+var grassCols = [new RGBA(40,60,60,1),new RGBA(210,230,240,1),new RGBA(255,150,155,1)];
 
 
 // ADJUSTMENTS //

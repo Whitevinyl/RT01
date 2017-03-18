@@ -70,8 +70,9 @@ proto.generate = function() {
 
     this.particles(400);
 
-
-    var clump = new GrassClump(this.obj, new Point3D(0,-15*meters,0), 8*meters, grassCols[0]);
+    col = grassCols[2];
+    var clump = new GrassClump(this.obj, new Point3D(-10 * meters,-6*meters,4.1*meters), 4*meters, col);
+    clump = new GrassClump(this.obj, new Point3D(-11 * meters,-6*meters,4.1*meters), 6*meters, col);
 };
 
 
@@ -116,10 +117,8 @@ proto.particles = function(n) {
 //-------------------------------------------------------------------------------------------
 
 proto.update = function() {
-    // ROTATE //
-    //this.obj.rotation.y += ((TAU/360) * 0.05);
 
-
+    // move particles //
     var l = this.particleList.length;
     for (var i=0; i<l; i++) {
         this.particleList[i].update();
@@ -144,17 +143,18 @@ proto = GrassClump.prototype;
 proto.build = function(height,col) {
 
     var matCol = new THREE.Color( colToHex(color.processRGBA(col,true)) );
-    var material = new materialType( {color: matCol} );
+    var material = new THREE.MeshBasicMaterial( {color: matCol} );
+    material.side = THREE.DoubleSide;
     var i, geometry, mesh;
 
-    for (i=0; i<4; i++) {
+    for (i=0; i<6; i++) {
         geometry = meshBlade1(0.3*meters, height);
         mesh = new THREE.Mesh( geometry, material );
         this.obj.add( mesh );
     }
 
-    for (i=0; i<5; i++) {
-        geometry = meshBlade2(0.3*meters, height);
+    for (i=0; i<6; i++) {
+        geometry = meshBlade2(0.2*meters, height);
         mesh = new THREE.Mesh( geometry, material );
         this.obj.add( mesh );
     }
@@ -165,10 +165,10 @@ proto.build = function(height,col) {
 function meshBlade1(w,h){
 
     var hw = w / 2; // half width
-    var th = tombola.rangeFloat((h/2),h);    // top height
-    var bo = tombola.rangeFloat(-(w/5),w/5); // base offset angle
-    var tx = tombola.rangeFloat(-(h/4),h/4); // top x offset
-    var tz = tombola.rangeFloat(-(h/9),h/9); // top z offset
+    var th = tombola.rangeFloat((h*0.6),h*1.2); // top height
+    var bo = tombola.rangeFloat(-(w/2),w/2);   // base offset angle
+    var tx = tombola.rangeFloat(-(h/4),h/4);   // top x offset
+    var tz = tombola.rangeFloat(-(h/8),h/8);   // top z offset
 
     var geometry = new THREE.Geometry();
     geometry.vertices.push(
@@ -178,7 +178,7 @@ function meshBlade1(w,h){
     );
 
     geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
-    geometry.faces.push( new THREE.Face3( 0, 2, 1 ) );
+    //geometry.faces.push( new THREE.Face3( 0, 2, 1 ) );
 
     geometry.computeBoundingSphere();
     geometry.computeFaceNormals();
@@ -189,10 +189,10 @@ function meshBlade2(w,h){
 
     var hw = w / 2;                             // half width
     var th = tombola.rangeFloat((h/2),h);       // top height
-    var bo = tombola.rangeFloat(-(w/5),w/5);    // base offset angle
+    var bo = tombola.rangeFloat(-(w/2),w/2);    // base offset angle
     var tx = tombola.rangeFloat(-(h/4),h/4);    // top x offset
-    var tz = tombola.rangeFloat(-(h/9),h/9);    // top z offset
-    var bend = tombola.rangeFloat((h/5),(h/2)); // bend offset for top
+    var tz = tombola.rangeFloat(-(h/8),h/8);    // top z offset
+    var bend = tombola.rangeFloat((h/6),(h/3)); // bend offset for top
     var elbow = th/2;                           // bend point
     var ex = tx/2;                              // bend x offset
     var ez = tz/2;                              // bend z offset
@@ -207,10 +207,10 @@ function meshBlade2(w,h){
     );
 
     geometry.faces.push( new THREE.Face3( 0, 1, 2 ) ); // top faces
-    geometry.faces.push( new THREE.Face3( 0, 2, 1 ) );
+    //geometry.faces.push( new THREE.Face3( 0, 2, 1 ) );
 
     geometry.faces.push( new THREE.Face3( 3, 1, 2 ) ); // bottom faces
-    geometry.faces.push( new THREE.Face3( 3, 2, 1 ) );
+    //geometry.faces.push( new THREE.Face3( 3, 2, 1 ) );
 
     geometry.computeBoundingSphere();
     geometry.computeFaceNormals();
